@@ -11,7 +11,7 @@ import time
 import string
 import sys
 import threading
-class OrderCar:
+class LQJX:
     # like browser
     header = {'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36'}
     cookie = None  # cookie obj
@@ -69,33 +69,26 @@ class OrderCar:
         result = str(auth)
         return result
 
-    def run(self, tid, jlcbh, xnsd):
-            while 1:
-                    result = self.orderCar(jlcbh, xnsd)
-                    if '成功' in result:
-                        print 'OK!!!!!OK!!!!!OK!!!!!OK!!!!!OK!!!!!'
-                        sys.exit(0)
-                    elif '该时间' in result :
-                        print 'Has not started!'
-                    elif '最多' in result :
-                        print 'Have an order!'
-                        sys.exit(0)
-                    else:
-                        print tid , orderdata['jlcbh'] , result
-                        orderdata['jlcbh'] = str(string.atol(orderdata['jlcbh']) + 1)
-                        
-                        
-class OrderThread(threading.Thread):
-    def __init__(self, tid, login, jlcbh, xnsd):
-        self.tid = tid
-        self.login = login
-        self.jlcbh = jlcbh
-        self.xnsd = xnsd
-        threading.Thread.__init__(self)
-    def run(self):
-        self.login.run(self.tid, self.jlcbh, self.xnsd)    
+    def run(self, jlcbh, xnsd):
+        while 1:
+            result = self.orderCar(jlcbh, xnsd)
+            if '成功' in result:
+                print 'OK!!!!!OK!!!!!OK!!!!!OK!!!!!OK!!!!!'
+                sys.exit(0)
+            elif '该时间' in result :
+                print 'Has not started!'
+            elif '最多' in result :
+                print 'Have an order!'
+                sys.exit(0)
+            elif '请核对' in result :
+                print 'Game Over!!!!!!!!'
+                sys.exit(0)
+            else:
+                print jlcbh , result
+                jlcbh = str(string.atol(jlcbh) + 1)
+            time.sleep(2) 
 #****************************************************************************
-print 'Author: Seny'
+print datetime.datetime.now()
 arg = None
 flag = False
 if len(sys.argv) > 1:
@@ -111,9 +104,8 @@ orderdata = {
   'jlcbh':inputdata[2],
   'xnsd':inputdata[3]
   }
-login = OrderCar()
+login = LQJX()
 flag = login.login(orderdata['username'], orderdata['password'])
 if flag:
-    for k in range(20):
-        new_thread = OrderThread(k, login, orderdata['jlcbh'], orderdata['xnsd'])
-        new_thread.start()
+    login.run(orderdata['jlcbh'], orderdata['xnsd'])
+
