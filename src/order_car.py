@@ -74,15 +74,16 @@ class LQJX:
             result = self.orderCar(jlcbh, xnsd)
             if '成功' in result:
                 print 'OK!!!!!OK!!!!!OK!!!!!OK!!!!!OK!!!!!'
-                sys.exit(0)
+                print datetime.datetime.now()
+                break
             elif '该时间' in result :
                 print 'Has not started!'
             elif '最多' in result :
                 print 'Have an order!'
-                sys.exit(0)
+                break
             elif '请核对' in result :
                 print 'Game Over!!!!!!!!'
-                sys.exit(0)
+                break
             else:
                 print jlcbh , result
                 jlcbh = str(string.atol(jlcbh) + 1)
