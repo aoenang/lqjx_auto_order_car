@@ -24,8 +24,7 @@ class LQJX:
 
     def login(self, username , password):
         postdata = {
-            '__VIEWSTATE':'/wEPDwUKMTg0NDI4MDE5OGRkj8OrkkOlfYqdhxkeEVV4GsZ6FLw0IioIcl+nbwqoGbo=',
-            '__EVENTVALIDATION':'/wEWBgKF6pivDAKl1bKzCQK1qbSRCwLoyMm8DwLi44eGDAKAv7D9Co04a1vpmJ/QuWDi2GFypJ8LBXRdxHsgxKaj/eIzgMJ6',
+            '__VIEWSTATE':'/wEPDwUKMTg0NDI4MDE5OGRk5fUBYNDgEyCFMqLG67nHjWu4h3Y=',
             'txtUserName':username,
             'txtPassword':password,
             'BtnLogin':'登  录',
@@ -44,10 +43,21 @@ class LQJX:
         if 'zhxx.aspx' in result:
             print "Login successful!"
             flag = True
+        elif '重复登录' in result:
+            print '对不起，您已在其它地方进行登录，不能多次重复登录!'
+            flag = False
         else:
             print "Login failed!"
             flag = False
         return flag
+    #Logout
+    def logout(self):
+        req = urllib2.Request(
+                url='http://106.37.230.254:81/Login.aspx?LoginOut=true',
+                headers=self.header
+        )
+        urllib2.urlopen(req).read()
+        print 'Logout!!!'
 
     # send order request which data
     def orderCar(self, jlcbh, xnsd):
@@ -91,13 +101,10 @@ class LQJX:
 #****************************************************************************
 print datetime.datetime.now()
 arg = None
-flag = False
 if len(sys.argv) > 1:
     arg = sys.argv[1]
-    flag = True
 elif arg == None:
     arg = raw_input("username,password,jlcbh,xnsd(812,15,58)\n")
-    flag = False
 inputdata = arg.split(",")
 orderdata = {
   'username':inputdata[0],
@@ -106,7 +113,11 @@ orderdata = {
   'xnsd':inputdata[3]
   }
 login = LQJX()
-flag = login.login(orderdata['username'], orderdata['password'])
-if flag:
-    login.run(orderdata['jlcbh'], orderdata['xnsd'])
+try:
+    flag = login.login(orderdata['username'], orderdata['password'])
+    if flag:
+        login.run(orderdata['jlcbh'], orderdata['xnsd'])
+    login.logout()
+except KeyboardInterrupt, e:
+    login.logout()
 
